@@ -334,7 +334,7 @@
             ttsLoading.style.opacity = '1';
 
             const userPrompt = text;
-            const apiKey = ""; // Add your API key here
+            const apiKey = "AIzaSyD-YcJPSO5DZzq2jfrFMuh-lfJ7rOdD1zQ";
             
             if (!apiKey) {
                 console.warn('TTS API key not configured. Skipping audio generation.');
@@ -342,7 +342,7 @@
                 return;
             }
 
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`;
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
 
             const payload = {
                 contents: [{ parts: [{ text: userPrompt }] }],
