@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Birthday Gift for Rategang Moroke - Premium Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Premium Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <!-- Three.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- OrbitControls -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Tone.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Premium Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            margin-top: 30px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Premium Glass Morphism Banner */
+        .glass-banner {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        /* Animated Gradient Text */
+        .gradient-text {
+            background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+
+        /* Floating Animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Premium Button Styles */
+        .premium-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .premium-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        /* Sparkle Cursor Effect */
+        .cursor-sparkle {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff, transparent);
+            pointer-events: none;
+            z-index: 9998;
+            animation: sparkle-fade 0.8s ease-out forwards;
+        }
+
+        @keyframes sparkle-fade {
+            0% {
+                opacity: 1;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        /* Vignette Effect */
+        #vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Premium Loading Screen -->
+    <div id="loading-screen">
+        <div class="loader"></div>
+        <div class="loading-text">Loading Magic...</div>
+    </div>
+
+    <!-- Vignette Effect -->
+    <div id="vignette"></div>
+
+    <!-- Premium Glass Morphism Instruction Banner -->
+    <div id="instruction-banner" class="fixed top-0 left-0 right-0 p-4 text-center z-[1001] glass-banner rounded-b-3xl transition-all duration-500 float-animation">
+        <p class="text-2xl font-bold gradient-text drop-shadow-2xl mb-1">
+            ✨ Click the Magical Gift to Reveal Your Surprise ✨
+        </p>
+        <p class="text-sm text-white/90 font-medium">Click the message card to close and replay</p>
+    </div>
+
+    <div id="container"></div>
+
+    <!-- Premium TTS Loading Indicator -->
+    <div id="tts-loading" class="fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 glass-banner text-white text-base font-semibold rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none z-[1001]">
+        <div class="flex items-center gap-3">
+            <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            <span>Generating Personalized Audio...</span>
+        </div>
+    </div>
+
+    <!-- Audio Toggle Button -->
+    <button id="audio-toggle" class="fixed bottom-8 right-8 w-14 h-14 glass-banner rounded-full flex items-center justify-center text-white text-xl shadow-2xl transition-all duration-300 hover:scale-110 z-[1001]">
+        🔊
+    </button>
+
+    <script type="module">
+        // --- Global State and Constants ---
+        const STATE = {
+            CLOSED: 0,
+            OPENING: 1,
+            MESSAGE_VISIBLE: 2,
+            CLOSING: 3,
+            current: 0,
+            hasInteracted: false,
+            audioEnabled: true
+        };
+
+        // Premium Color Scheme - Luxurious and Vibrant
+        const GIFT_SIZE = { width: 1.8, height: 1.8, depth: 1.8 };
+        const TEXT_COLOR = '#1a1a2e';
+        const PAPER_COLOR = '#ffffff';
+        const PRIMARY_COLOR = 0xff6b9d; // Rose Gold
+        const SECONDARY_COLOR = 0xffd700; // Pure Gold
+        const ACCENT_COLOR = 0xc724b1; // Royal Purple
+
+        // --- Three.js Globals ---
+        let scene, camera, renderer, controls;
+        let giftBase, giftLid, messagePlane, sparkleSystem, confettiSystem;
+        let ambientLight, pointLight1, pointLight2, spotLight;
+        let animationStartTime = 0;
+        const animationDuration = 2.0; // Slower, more elegant
+
+        // --- Audio Globals ---
+        let bgmLoop = null;
+        let audioInitialized = false;
+
+        // --- Cursor Sparkle Effect ---
+        let lastSparkleTime = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastSparkleTime > 50) { // Throttle sparkles
+                createCursorSparkle(e.clientX, e.clientY);
+                lastSparkleTime = now;
+            }
+        });
+
+        function createCursorSparkle(x, y) {
+            const sparkle = document.createElement('div');
+            sparkle.className = 'cursor-sparkle';
+            sparkle.style.left = x + 'px';
+            sparkle.style.top = y + 'px';
+            sparkle.style.background = `radial-gradient(circle, ${['#ffd700', '#ff6b9d', '#c724b1', '#fff'][Math.floor(Math.random() * 4)]}, transparent)`;
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 800);
+        }
+
+        // --- Audio Toggle ---
+        document.getElementById('audio-toggle').addEventListener('click', () => {
+            STATE.audioEnabled = !STATE.audioEnabled;
+            const btn = document.getElementById('audio-toggle');
+            btn.textContent = STATE.audioEnabled ? '🔊' : '🔇';
+            
+            if (!STATE.audioEnabled) {
+                stopBGM();
+            } else if (STATE.hasInteracted) {
+                initializeAudio();
+            }
+        });
+
+        // --- Utility Functions for TTS Conversion ---
+        const base64ToArrayBuffer = (base64) => {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        };
+
+        const pcmToWav = (pcm16, sampleRate) => {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16.length * bytesPerSample;
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            // RIFF chunk descriptor
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + dataSize, true);
+            writeString(view, 8, 'WAVE');
+            // FMT sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            // DATA sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, dataSize, true);
+
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(offset, pcm16[i], true);
+                offset += 2;
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        };
+
+        const writeString = (view, offset, string) => {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        };
+
+        // --- TTS API Call Logic ---
+        const playTtsAudio = async (text) => {
+            if (!STATE.audioEnabled) return;
+            
+            const ttsLoading = document.getElementById('tts-loading');
+            ttsLoading.style.opacity = '1';
+
+            const userPrompt = text;
+            const apiKey = "AIzaSyD-YcJPSO5DZzq2jfrFMuh-lfJ7rOdD1zQ";
+            
+            if (!apiKey) {
+                console.warn('TTS API key not configured. Skipping audio generation.');
+                ttsLoading.style.opacity = '0';
+                return;
+            }
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                generationConfig: {
+                    responseModalities: ["AUDIO"],
+                    speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } } },
+                }
+            };
+
+            try {
+                let response;
+                const maxRetries = 3;
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        response = await fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) break;
+                        
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    } catch (error) {
+                        if (i === maxRetries - 1) throw error;
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+
+                ttsLoading.style.opacity = '0';
+                
+                if (!response || !response.ok) {
+                    console.warn('TTS request failed');
+                    return;
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/L16")) {
+                    const rateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+
+                    const audio = new Audio(audioUrl);
+                    audio.volume = 0.8;
+                    audio.play().catch(e => console.error("Audio play failed:", e));
+                }
+            } catch (error) {
+                console.error('TTS error:', error);
+                ttsLoading.style.opacity = '0';
+            }
+        };
+
+        // --- Premium BGM with Rich Harmonies ---
+        const initializeAudio = () => {
+            if (audioInitialized || !STATE.audioEnabled) return;
+            audioInitialized = true;
+            STATE.hasInteracted = true;
+            
+            Tone.start();
+
+            // Premium Effect Chain
+            const reverb = new Tone.Reverb({ 
+                decay: 6, 
+                preDelay: 0.08, 
+                wet: 0.4 
+            }).toDestination();
+            
+            const chorus = new Tone.Chorus(2, 2.5, 0.5).connect(reverb);
+            const delay = new Tone.PingPongDelay("8n", 0.3).connect(chorus);
+            const filter = new Tone.Filter(10000, "lowpass").connect(delay);
+
+            // Lush Pad Synth
+            const pad = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: { attack: 1.2, decay: 0.8, sustain: 0.7, release: 2 },
+                volume: -16
+            }).connect(filter);
+
+            // Bell/Chime Synth
+            const bell = new Tone.MetalSynth({
+                frequency: 200,
+                envelope: { attack: 0.001, decay: 0.5, release: 0.8 },
+                harmonicity: 5.1,
+                modulationIndex: 32,
+                resonance: 4000,
+                octaves: 1.5,
+                volume: -20
+            }).connect(filter);
+
+            // Magical Chord Progression: Cmaj7 -> Fmaj7 -> Am7 -> G7
+            const chordProgression = [
+                ["C4", "E4", "G4", "B4"],   // Cmaj7
+                ["F4", "A4", "C5", "E5"],   // Fmaj7
+                ["A3", "C4", "E4", "G4"],   // Am7
+                ["G3", "B3", "D4", "F4"]    // G7
+            ];
+
+            const melodyNotes = ["C5", "E5", "G5", "B5", "A5", "G5", "E5", "D5"];
+            
+            let chordIndex = 0;
+            let melodyIndex = 0;
+
+            // Chord Loop
+            bgmLoop = new Tone.Loop(time => {
+                pad.triggerAttackRelease(chordProgression[chordIndex % chordProgression.length], "2n", time);
+                chordIndex++;
+            }, "2n").start(0);
+
+            // Melody Loop
+            new Tone.Loop(time => {
+                bell.triggerAttackRelease(melodyNotes[melodyIndex % melodyNotes.length], "8n", time);
+                melodyIndex++;
+            }, "4n").start(0);
+
+            Tone.Transport.bpm.value = 72; // Slower, more elegant tempo
+            Tone.Transport.start();
+        };
+
+        const stopBGM = () => {
+            if (bgmLoop && STATE.audioEnabled) {
+                Tone.Transport.stop();
+                Tone.Transport.cancel();
+                bgmLoop.stop();
+                bgmLoop = null;
+                audioInitialized = false;
+            }
+        };
+
+        // --- Premium Texture Creation ---
+        function createTextureWithText(text, fontSize = '32px', color = TEXT_COLOR, background = PAPER_COLOR) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            
+            const size = 2048; // Ultra high resolution
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Gradient background
+            const gradient = context.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(1, '#f8f9fa');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, size, size);
+
+            // Subtle border
+            context.strokeStyle = 'rgba(0,0,0,0.1)';
+            context.lineWidth = 4;
+            context.strokeRect(20, 20, size - 40, size - 40);
+
+            context.font = `bold ${fontSize} 'Playfair Display', serif`;
+            context.fillStyle = color;
+            context.textAlign = 'center';
+            context.textBaseline = 'middle';
+            
+            const lines = text.split('\n');
+            const lineHeight = 90;
+            let y = size / 2 - (lines.length - 1) * lineHeight / 2;
+
+            lines.forEach((line) => {
+                // Add subtle shadow
+                context.shadowColor = 'rgba(0,0,0,0.2)';
+                context.shadowBlur = 8;
+                context.shadowOffsetX = 2;
+                context.shadowOffsetY = 2;
+                
+                context.fillText(line, size / 2, y);
+                y += lineHeight;
+            });
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        function createPremiumGiftTexture() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            const size = 512;
+            canvas.width = size;
+            canvas.height = size;
+
+            // Luxury gradient base
+            const gradient = context.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#ff6b9d');
+            gradient.addColorStop(0.5, '#ff8fab');
+            gradient.addColorStop(1, '#ff6b9d');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, size, size);
+
+            // Shimmer effect
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * size;
+                const y = Math.random() * size;
+                const radius = Math.random() * 3;
+                context.fillStyle = `rgba(255, 255, 255, ${Math.random() * 0.5})`;
+                context.beginPath();
+                context.arc(x, y, radius, 0, Math.PI * 2);
+                context.fill();
+            }
+
+            // Gold Ribbon (vertical) with gradient
+            const ribbonGradientV = context.createLinearGradient(size / 2 - 30, 0, size / 2 + 30, 0);
+            ribbonGradientV.addColorStop(0, '#b8860b');
+            ribbonGradientV.addColorStop(0.5, '#ffd700');
+            ribbonGradientV.addColorStop(1, '#b8860b');
+            context.fillStyle = ribbonGradientV;
+            context.fillRect(size / 2 - 30, 0, 60, size);
+
+            // Gold Ribbon (horizontal)
+            const ribbonGradientH = context.createLinearGradient(0, size / 2 - 30, 0, size / 2 + 30);
+            ribbonGradientH.addColorStop(0, '#b8860b');
+            ribbonGradientH.addColorStop(0.5, '#ffd700');
+            ribbonGradientH.addColorStop(1, '#b8860b');
+            context.fillStyle = ribbonGradientH;
+            context.fillRect(0, size / 2 - 30, size, 60);
+
+            // Luxury Bow
+            const bowGradient = context.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, 50);
+            bowGradient.addColorStop(0, '#ffd700');
+            bowGradient.addColorStop(1, '#ffed4e');
+            context.fillStyle = bowGradient;
+            context.beginPath();
+            context.arc(size / 2, size / 2, 40, 0, Math.PI * 2);
+            context.fill();
+
+            // Bow highlight
+            context.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            context.beginPath();
+            context.arc(size / 2 - 10, size / 2 - 10, 15, 0, Math.PI * 2);
+            context.fill();
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // --- Three.js Scene Initialization ---
+        function init() {
+            const container = document.getElementById('container');
+            
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog(0x667eea, 8, 25);
+            
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 3.5, 7);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            container.appendChild(renderer.domElement);
+
+            // Premium Lighting Setup
+            ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            // Key Light (warm)
+            pointLight1 = new THREE.PointLight(0xffd700, 2, 30);
+            pointLight1.position.set(5, 8, 5);
+            pointLight1.castShadow = true;
+            pointLight1.shadow.mapSize.width = 2048;
+            pointLight1.shadow.mapSize.height = 2048;
+            scene.add(pointLight1);
+
+            // Fill Light (cool)
+            pointLight2 = new THREE.PointLight(0xff6b9d, 1.5, 25);
+            pointLight2.position.set(-5, 5, -3);
+            pointLight2.castShadow = true;
+            scene.add(pointLight2);
+
+            // Spotlight for drama
+            spotLight = new THREE.SpotLight(0xffffff, 1);
+            spotLight.position.set(0, 15, 0);
+            spotLight.angle = Math.PI / 6;
+            spotLight.penumbra = 0.3;
+            spotLight.castShadow = true;
+            spotLight.target.position.set(0, 0, 0);
+            scene.add(spotLight);
+            scene.add(spotLight.target);
+
+            // Premium Starfield
+            createStarfield();
+
+            // Floating particles background
+            createAmbientParticles();
+
+            // OrbitControls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.04;
+            controls.enablePan = false;
+            controls.enableZoom = true;
+            controls.minDistance = 4;
+            controls.maxDistance = 12;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.8;
+            controls.target = new THREE.Vector3(0, 0.5, 0);
+            controls.update();
+
+            createGift();
+            createMessagePlane();
+            createSparkleSystem();
+            createConfettiSystem();
+
+            window.addEventListener('resize', onWindowResize);
+            renderer.domElement.addEventListener('pointerdown', onPointerDown);
+
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading-screen').classList.add('hidden');
+            }, 1500);
+
+            animate();
+        }
+
+        function createStarfield() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starCount = 3000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+
+            const colorPalette = [
+                new THREE.Color(0xffd700),
+                new THREE.Color(0xff6b9d),
+                new THREE.Color(0xffffff),
+                new THREE.Color(0xc724b1)
+            ];
+
+            for (let i = 0; i < starCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 300;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 300;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 300;
+
+                const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+
+                sizes[i] = Math.random() * 2 + 0.5;
+            }
+
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            starsGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const starsMaterial = new THREE.PointsMaterial({
+                size: 0.2,
+                sizeAttenuation: true,
+                transparent: true,
+                opacity: 0.9,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+
+        function createAmbientParticles() {
+            const geometry = new THREE.BufferGeometry();
+            const count = 200;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+
+            for (let i = 0; i < count; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 20;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+
+                const gold = new THREE.Color(0xffd700);
+                colors[i * 3] = gold.r;
+                colors[i * 3 + 1] = gold.g;
+                colors[i * 3 + 2] = gold.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.08,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particles = new THREE.Points(geometry, material);
+            particles.userData.isAmbient = true;
+            scene.add(particles);
+        }
+
+        function createGift() {
+            // Premium metallic material for base
+            const baseMaterial = new THREE.MeshStandardMaterial({
+                color: PRIMARY_COLOR,
+                metalness: 0.4,
+                roughness: 0.2,
+                emissive: PRIMARY_COLOR,
+                emissiveIntensity: 0.1
+            });
+
+            // Enhanced geometry with rounded edges
+            const baseGeometry = new THREE.BoxGeometry(
+                GIFT_SIZE.width, 
+                GIFT_SIZE.height * 0.85, 
+                GIFT_SIZE.depth,
+                8, 8, 8
+            );
+            
+            giftBase = new THREE.Mesh(baseGeometry, baseMaterial);
+            giftBase.position.y = GIFT_SIZE.height * 0.425 - 0.5;
+            giftBase.castShadow = true;
+            giftBase.receiveShadow = true;
+            scene.add(giftBase);
+            giftBase.userData.isGift = true;
+
+            // Luxury Lid with texture
+            const lidGeometry = new THREE.BoxGeometry(
+                GIFT_SIZE.width * 1.1,
+                GIFT_SIZE.height * 0.15,
+                GIFT_SIZE.depth * 1.1,
+                8, 8, 8
+            );
+            
+            const lidMaterial = new THREE.MeshStandardMaterial({
+                map: createPremiumGiftTexture(),
+                metalness: 0.5,
+                roughness: 0.15,
+                emissive: 0xffd700,
+                emissiveIntensity: 0.15
+            });
+            
+            giftLid = new THREE.Mesh(lidGeometry, lidMaterial);
+            giftLid.position.y = GIFT_SIZE.height * 0.85 - 0.425;
+            giftLid.castShadow = true;
+            giftLid.receiveShadow = true;
+            scene.add(giftLid);
+            giftLid.userData.isGift = true;
+
+            // Add glow effect
+            const glowGeometry = new THREE.BoxGeometry(
+                GIFT_SIZE.width * 1.15,
+                GIFT_SIZE.height,
+                GIFT_SIZE.depth * 1.15
+            );
+            const glowMaterial = new THREE.MeshBasicMaterial({
+                color: 0xff6b9d,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.BackSide
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            glow.position.y = GIFT_SIZE.height * 0.425 - 0.5;
+            scene.add(glow);
+            giftBase.userData.glow = glow;
+        }
+
+        function createMessagePlane() {
+            const message =
+                "✨ HAPPY BIRTHDAY! ✨\n\n" +
+                "Dearest Rategang Moroke,\n\n" +
+                "This magical gift carries all my love and warmest wishes.\n" +
+                "You are an extraordinary sister, a radiant star,\n" +
+                "and you deserve a celebration filled with pure joy,\n" +
+                "laughter, and unforgettable moments.\n\n" +
+                "May your year ahead sparkle with success,\n" +
+                "overflow with happiness, and shine as brilliantly\n" +
+                "as the incredible person you are!\n\n" +
+                "With all my love,\n" +
+                "Your Adoring Sibling ❤️";
+
+            const messageTexture = createTextureWithText(message, '28px', TEXT_COLOR, PAPER_COLOR);
+
+            // Premium card with depth
+            const cardGroup = new THREE.Group();
+            
+            // Card backing
+            const backGeometry = new THREE.BoxGeometry(
+                GIFT_SIZE.width * 3,
+                GIFT_SIZE.height * 3,
+                0.15
+            );
+            const backMaterial = new THREE.MeshStandardMaterial({
+                color: 0xf8f9fa,
+                metalness: 0.2,
+                roughness: 0.4
+            });
+            const backing = new THREE.Mesh(backGeometry, backMaterial);
+            backing.castShadow = true;
+            cardGroup.add(backing);
+
+            // Message face
+            const faceGeometry = new THREE.PlaneGeometry(
+                GIFT_SIZE.width * 2.8,
+                GIFT_SIZE.height * 2.8
+            );
+            const faceMaterial = new THREE.MeshBasicMaterial({
+                map: messageTexture,
+                transparent: true,
+                opacity: 0
+            });
+            const face = new THREE.Mesh(faceGeometry, faceMaterial);
+            face.position.z = 0.08;
+            cardGroup.add(face);
+
+            // Gold border frame
+            const borderGeometry = new THREE.BoxGeometry(
+                GIFT_SIZE.width * 3.05,
+                GIFT_SIZE.height * 3.05,
+                0.08
+            );
+            const borderMaterial = new THREE.MeshStandardMaterial({
+                color: 0xffd700,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const border = new THREE.Mesh(borderGeometry, borderMaterial);
+            border.position.z = -0.04;
+            cardGroup.add(border);
+
+            cardGroup.visible = false;
+            cardGroup.position.set(0, 0, 0);
+            cardGroup.userData.isMessage = true;
+            cardGroup.userData.faceMaterial = faceMaterial;
+            
+            messagePlane = cardGroup;
+            scene.add(messagePlane);
+        }
+
+        function createSparkleSystem() {
+            const particleCount = 5000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(particleCount * 3);
+            const velocities = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+
+            const colorPalette = [
+                new THREE.Color(0xffd700),
+                new THREE.Color(0xff6b9d),
+                new THREE.Color(0xffffff),
+                new THREE.Color(0xc724b1),
+                new THREE.Color(0xffed4e)
+            ];
+
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3] = 0;
+                positions[i * 3 + 1] = 0;
+                positions[i * 3 + 2] = 0;
+
+                const v = Math.random() * 0.8 + 0.4;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI * 0.5;
+
+                velocities[i * 3] = v * Math.sin(phi) * Math.cos(theta);
+                velocities[i * 3 + 1] = v * Math.cos(phi) + 0.8;
+                velocities[i * 3 + 2] = v * Math.sin(phi) * Math.sin(theta);
+
+                const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+
+                sizes[i] = Math.random() * 0.15 + 0.05;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+            geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.15,
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                depthWrite: false,
+                sizeAttenuation: true
+            });
+
+            sparkleSystem = new THREE.Points(geometry, material);
+            sparkleSystem.visible = false;
+            scene.add(sparkleSystem);
+        }
+
+        function createConfettiSystem() {
+            const confettiCount = 1000;
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(confettiCount * 3);
+            const velocities = new Float32Array(confettiCount * 3);
+            const rotations = new Float32Array(confettiCount);
+            const colors = new Float32Array(confettiCount * 3);
+
+            const colorPalette = [
+                new THREE.Color(0xffd700),
+                new THREE.Color(0xff6b9d),
+                new THREE.Color(0xc724b1),
+                new THREE.Color(0xffed4e)
+            ];
+
+            for (let i = 0; i < confettiCount; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 4;
+                positions[i * 3 + 1] = GIFT_SIZE.height + Math.random() * 3;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 4;
+
+                velocities[i * 3] = (Math.random() - 0.5) * 0.3;
+                velocities[i * 3 + 1] = -(Math.random() * 0.5 + 0.3);
+                velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.3;
+
+                rotations[i] = Math.random() * Math.PI * 2;
+
+                const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+            geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+            geometry.setAttribute('rotation', new THREE.BufferAttribute(rotations, 1));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const material = new THREE.PointsMaterial({
+                size: 0.12,
+                vertexColors: true,
+                transparent: true,
+                opacity: 1,
+                sizeAttenuation: true
+            });
+
+            confettiSystem = new THREE.Points(geometry, material);
+            confettiSystem.visible = false;
+            scene.add(confettiSystem);
+        }
+
+        // --- Interaction Logic ---
+        const raycaster = new THREE.Raycaster();
+        const pointer = new THREE.Vector2();
+
+        function onPointerDown(event) {
+            if (!STATE.hasInteracted && STATE.audioEnabled) {
+                initializeAudio();
+            }
+
+            pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+            pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(pointer, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            for (const intersect of intersects) {
+                if (intersect.object.userData.isGift && STATE.current === STATE.CLOSED) {
+                    handleGiftClick();
+                    break;
+                } else if (intersect.object.parent && intersect.object.parent.userData.isMessage && STATE.current === STATE.MESSAGE_VISIBLE) {
+                    handleMessageClose();
+                    break;
+                }
+            }
+        }
+
+        // --- Animation Loop ---
+        const clock = new THREE.Clock();
+        let time = 0;
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+            time += delta;
+            controls.update();
+
+            // Animate ambient particles
+            scene.children.forEach(child => {
+                if (child.userData.isAmbient) {
+                    child.rotation.y += delta * 0.05;
+                    const positions = child.geometry.attributes.position.array;
+                    for (let i = 0; i < positions.length; i += 3) {
+                        positions[i + 1] += Math.sin(time + positions[i]) * 0.002;
+                    }
+                    child.geometry.attributes.position.needsUpdate = true;
+                }
+            });
+
+            // Pulsing glow on gift
+            if (giftBase.userData.glow && STATE.current === STATE.CLOSED) {
+                const pulse = Math.sin(time * 2) * 0.5 + 0.5;
+                giftBase.userData.glow.material.opacity = 0.05 + pulse * 0.1;
+                giftBase.userData.glow.scale.setScalar(1 + pulse * 0.05);
+            }
+
+            // Gift rotation when closed
+            if (STATE.current === STATE.CLOSED) {
+                giftBase.rotation.y += delta * 0.3;
+                giftLid.rotation.y += delta * 0.3;
+                if (giftBase.userData.glow) {
+                    giftBase.userData.glow.rotation.y += delta * 0.3;
+                }
+            }
+
+            // Opening/Closing Animation
+            if (STATE.current === STATE.OPENING || STATE.current === STATE.CLOSING) {
+                const elapsed = clock.getElapsedTime() - animationStartTime;
+                let t = Math.min(1, elapsed / animationDuration);
+                
+                // Smooth easing
+                t = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+                
+                let reverseT = 1 - t;
+
+                if (STATE.current === STATE.OPENING) {
+                    // Dramatic lid explosion
+                    giftLid.position.y = THREE.MathUtils.lerp(
+                        GIFT_SIZE.height * 0.85 - 0.425,
+                        GIFT_SIZE.height * 4,
+                        t
+                    );
+                    giftLid.rotation.x = t * Math.PI * 2;
+                    giftLid.rotation.y += delta * 8;
+                    giftLid.rotation.z = t * Math.PI;
+
+                    // Fade out lid
+                    giftLid.material.opacity = 1 - t;
+                    giftLid.material.transparent = true;
+
+                    // Reveal message with elegant entrance
+                    messagePlane.visible = true;
+                    messagePlane.userData.faceMaterial.opacity = t;
+                    messagePlane.position.y = THREE.MathUtils.lerp(-2, 1, t);
+                    messagePlane.scale.setScalar(THREE.MathUtils.lerp(0.3, 1, t));
+                    messagePlane.rotation.y = (1 - t) * Math.PI * 2;
+
+                    // Fade out gift base
+                    giftBase.material.opacity = 1 - t * 0.7;
+                    giftBase.material.transparent = true;
+
+                    if (giftBase.userData.glow) {
+                        giftBase.userData.glow.visible = false;
+                    }
+
+                    controls.autoRotate = false;
+
+                    if (t === 1) {
+                        STATE.current = STATE.MESSAGE_VISIBLE;
+                        giftLid.visible = false;
+                        controls.target.set(0, 1, 0);
+                        controls.update();
+                    }
+                } else if (STATE.current === STATE.CLOSING) {
+                    // Reverse animation
+                    giftLid.visible = true;
+                    giftLid.position.y = THREE.MathUtils.lerp(
+                        GIFT_SIZE.height * 0.85 - 0.425,
+                        GIFT_SIZE.height * 4,
+                        reverseT
+                    );
+                    giftLid.rotation.x = reverseT * Math.PI * 2;
+                    giftLid.rotation.y += delta * 8;
+                    giftLid.rotation.z = reverseT * Math.PI;
+                    giftLid.material.opacity = 1 - reverseT;
+
+                    messagePlane.userData.faceMaterial.opacity = reverseT;
+                    messagePlane.position.y = THREE.MathUtils.lerp(-2, 1, reverseT);
+                    messagePlane.scale.setScalar(THREE.MathUtils.lerp(0.3, 1, reverseT));
+                    messagePlane.rotation.y = (1 - reverseT) * Math.PI * 2;
+
+                    giftBase.material.opacity = 1 - reverseT * 0.7;
+
+                    if (reverseT === 0) {
+                        STATE.current = STATE.CLOSED;
+                        messagePlane.visible = false;
+                        giftLid.material.opacity = 1;
+                        giftLid.material.transparent = false;
+                        giftBase.material.opacity = 1;
+                        giftBase.material.transparent = false;
+                        controls.autoRotate = true;
+                        controls.target.set(0, 0.5, 0);
+                        controls.update();
+                        if (giftBase.userData.glow) {
+                            giftBase.userData.glow.visible = true;
+                        }
+                    }
+                }
+            }
+
+            // Sparkle system animation
+            if (sparkleSystem.visible) {
+                const positions = sparkleSystem.geometry.attributes.position.array;
+                const velocities = sparkleSystem.geometry.attributes.velocity.array;
+                const sizes = sparkleSystem.geometry.attributes.size.array;
+                
+                let allFaded = true;
+
+                for (let i = 0; i < positions.length / 3; i++) {
+                    positions[i * 3] += velocities[i * 3] * delta * 3;
+                    positions[i * 3 + 1] += velocities[i * 3 + 1] * delta * 3;
+                    positions[i * 3 + 2] += velocities[i * 3 + 2] * delta * 3;
+                    
+                    velocities[i * 3 + 1] -= delta * 1.5; // Gravity
+                    
+                    sizes[i] *= 0.99;
+
+                    if (sizes[i] > 0.001) {
+                        allFaded = false;
+                    }
+                }
+
+                sparkleSystem.geometry.attributes.position.needsUpdate = true;
+                sparkleSystem.geometry.attributes.size.needsUpdate = true;
+                sparkleSystem.material.opacity *= 0.98;
+
+                if (allFaded || sparkleSystem.material.opacity < 0.01) {
+                    sparkleSystem.visible = false;
+                }
+            }
+
+            // Confetti system animation
+            if (confettiSystem && confettiSystem.visible) {
+                const positions = confettiSystem.geometry.attributes.position.array;
+                const velocities = confettiSystem.geometry.attributes.velocity.array;
+                
+                for (let i = 0; i < positions.length / 3; i++) {
+                    positions[i * 3] += velocities[i * 3] * delta * 2;
+                    positions[i * 3 + 1] += velocities[i * 3 + 1] * delta * 2;
+                    positions[i * 3 + 2] += velocities[i * 3 + 2] * delta * 2;
+
+                    // Reset if fallen too far
+                    if (positions[i * 3 + 1] < -5) {
+                        positions[i * 3 + 1] = 5;
+                    }
+                }
+
+                confettiSystem.geometry.attributes.position.needsUpdate = true;
+                confettiSystem.rotation.y += delta * 0.2;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- Event Handlers ---
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        async function handleGiftClick() {
+            if (STATE.current !== STATE.CLOSED) return;
+
+            // Premium sound effects
+            if (STATE.audioEnabled) {
+                const burst = new Tone.MembraneSynth({
+                    pitchDecay: 0.05,
+                    octaves: 6,
+                    oscillator: { type: "sine" },
+                    envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 },
+                    volume: -8
+                }).toDestination();
+                burst.triggerAttackRelease("C2", "8n");
+
+                const chime = new Tone.MetalSynth({
+                    frequency: 500,
+                    envelope: { attack: 0.001, decay: 1, release: 0.5 },
+                    harmonicity: 5.1,
+                    modulationIndex: 32,
+                    resonance: 4000,
+                    octaves: 1.5,
+                    volume: -12
+                }).toDestination();
+                chime.triggerAttackRelease("C5", "4n");
+
+                stopBGM();
+            }
+
+            STATE.current = STATE.OPENING;
+            animationStartTime = clock.getElapsedTime();
+
+            // Reset and show sparkles
+            resetSparkleSystem();
+            sparkleSystem.visible = true;
+
+            // Show confetti
+            if (confettiSystem) {
+                confettiSystem.visible = true;
+            }
+
+            // Camera animation
+            const startPos = camera.position.clone();
+            const endPos = new THREE.Vector3(0, 2, 5);
+            const duration = 2000;
+            const startTime = Date.now();
+
+            function animateCamera() {
+                const elapsed = Date.now() - startTime;
+                const t = Math.min(1, elapsed / duration);
+                const eased = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+                
+                camera.position.lerpVectors(startPos, endPos, eased);
+                
+                if (t < 1) {
+                    requestAnimationFrame(animateCamera);
+                }
+            }
+            animateCamera();
+
+            // TTS after delay
+            setTimeout(() => {
+                playTtsAudio(
+                    "Say with warmth and excitement: Happy Birthday, Rategang Moroke! " +
+                    "Wishing you a day filled with magic, laughter, and all the joy your heart can hold!"
+                ).catch(e => console.error("TTS error:", e));
+            }, 1500);
+        }
+
+        function handleMessageClose() {
+            if (STATE.current !== STATE.MESSAGE_VISIBLE) return;
+
+            STATE.current = STATE.CLOSING;
+            animationStartTime = clock.getElapsedTime();
+
+            if (confettiSystem) {
+                confettiSystem.visible = false;
+            }
+
+            // Restart BGM if audio enabled
+            if (STATE.audioEnabled && !audioInitialized) {
+                setTimeout(() => initializeAudio(), 1000);
+            }
+        }
+
+        function resetSparkleSystem() {
+            const positions = sparkleSystem.geometry.attributes.position.array;
+            const velocities = sparkleSystem.geometry.attributes.velocity.array;
+            const sizes = sparkleSystem.geometry.attributes.size.array;
+
+            for (let i = 0; i < positions.length / 3; i++) {
+                positions[i * 3] = (Math.random() - 0.5) * 0.5;
+                positions[i * 3 + 1] = 0.5;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+
+                const v = Math.random() * 0.8 + 0.4;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.random() * Math.PI * 0.5;
+
+                velocities[i * 3] = v * Math.sin(phi) * Math.cos(theta);
+                velocities[i * 3 + 1] = v * Math.cos(phi) + 0.8;
+                velocities[i * 3 + 2] = v * Math.sin(phi) * Math.sin(theta);
+
+                sizes[i] = Math.random() * 0.15 + 0.05;
+            }
+
+            sparkleSystem.geometry.attributes.position.needsUpdate = true;
+            sparkleSystem.geometry.attributes.velocity.needsUpdate = true;
+            sparkleSystem.geometry.attributes.size.needsUpdate = true;
+            sparkleSystem.material.opacity = 1.0;
+        }
+
+        // --- Initialize ---
+        window.onload = init;
+
+    </script>
+</body>
+</html>
