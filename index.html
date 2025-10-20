@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0b12" />
+  <title>🎁 A Birthday Galaxy for Rategang Moroke</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800;900&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            midnight: '#0b0b12',
+            aurora1: '#0ea5e9',
+            aurora2: '#a78bfa',
+            aurora3: '#22d3ee',
+            roseGold: '#ffc9b9',
+            giftPink: '#fc72b7',
+            giftGold: '#ffe45c'
+          },
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['Playfair Display', 'serif']
+          },
+          boxShadow: {
+            glass: '0 10px 30px rgba(255,255,255,0.08)'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Three.js (UMD) + controls + postprocessing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+
+  <!-- Tone.js for gentle ambience -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+
+  <style>
+    :root {
+      --bg-midnight: #0b0b12;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(1200px 800px at 20% 10%, rgba(34,211,238,0.15), transparent 60%),
+                  radial-gradient(900px 700px at 80% 30%, rgba(167,139,250,0.18), transparent 60%),
+                  radial-gradient(700px 1000px at 50% 110%, rgba(14,165,233,0.20), transparent 70%),
+                  #0b0b12;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+    }
+    /* Soft animated aurora layer */
+    .aurora::before, .aurora::after {
+      content: "";
+      position: absolute;
+      inset: -20%;
+      background: radial-gradient(800px 600px at 20% 30%, rgba(255, 201, 185, 0.08), transparent 60%),
+                  radial-gradient(600px 800px at 80% 60%, rgba(252, 114, 183, 0.08), transparent 60%);
+      filter: blur(40px) saturate(120%);
+      animation: floaty 28s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    .aurora::after { animation-duration: 36s; animation-delay: -6s; }
+    @keyframes floaty { from { transform: translateY(-2%) translateX(-2%) rotate(-1deg); } to { transform: translateY(2%) translateX(2%) rotate(1deg); } }
+
+    canvas { display: block; width: 100%; height: 100%; }
+
+    /* Glass UI elements */
+    .glass {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: linear-gradient(to bottom right, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border: 1px solid rgba(255,255,255,0.16);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    }
+
+    /* Instruct banner pulse */
+    .pulse-once { animation: pulseOnce 1.8s ease-out 1; }
+    @keyframes pulseOnce {
+      0% { transform: translateY(-8px); opacity: 0 }
+      35% { transform: translateY(0); opacity: 1 }
+      100% { transform: translateY(-4px); opacity: .95 }
+    }
+
+    /* Loading shimmer */
+    .shimmer {
+      background: linear-gradient(110deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.12) 18%, rgba(255,255,255,0.05) 33%);
+      background-size: 200% 100%;
+      animation: shimmer 1.8s linear infinite;
+    }
+    @keyframes shimmer { to { background-position-x: -200%; } }
+
+    /* Accessibility hidden text */
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  </style>
+</head>
+<body class="relative aurora">
+  <a class="sr-only" href="#experience">Skip to experience</a>
+
+  <!-- Top instruction banner -->
+  <div id="instruction-banner" class="fixed top-0 left-0 right-0 z-[1001] px-4 py-3 text-center pulse-once">
+    <div class="inline-block glass rounded-b-2xl px-5 py-3">
+      <p class="text-base sm:text-lg font-extrabold text-roseGold tracking-tight drop-shadow">✨ Tap the Spinning Gift to Open Your Surprise! ✨</p>
+      <p class="text-[11px] sm:text-xs text-white/70">Tap the message to re-close.</p>
+    </div>
+  </div>
+
+  <!-- Control Bar -->
+  <div class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[1001] flex gap-2 items-center">
+    <button id="btn-audio" class="glass rounded-full px-4 py-2 text-sm text-white/90 hover:text-white transition active:scale-[.98] shadow-glass">
+      🔊 Music On
+    </button>
+    <button id="btn-recenter" class="glass rounded-full px-4 py-2 text-sm text-white/90 hover:text-white transition active:scale-[.98] shadow-glass">
+      🎯 Recenter
+    </button>
+    <button id="btn-reset" class="glass rounded-full px-4 py-2 text-sm text-white/90 hover:text-white transition active:scale-[.98] shadow-glass">
+      ♻️ Reset
+    </button>
+  </div>
+
+  <!-- Reading-mode dim overlay (radial vignette, center clear) -->
+  <div id="dim-overlay" class="fixed inset-0 z-[1000] pointer-events-none opacity-0 transition-opacity duration-300"
+       style="background: radial-gradient(closest-side at 50% 52%, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.4) 72%, rgba(0,0,0,0.68) 100%);"></div>
+
+  <!-- Center splash start -->
+  <div id="splash" class="fixed inset-0 z-[1002] grid place-items-center">
+    <div class="glass rounded-3xl max-w-[92vw] sm:max-w-lg mx-auto p-6 sm:p-8 text-center shadow-glass">
+      <div class="text-2xl sm:text-4xl font-display font-extrabold text-white/95 leading-tight">
+        A Birthday Galaxy
+        <div class="text-lg sm:text-2xl font-sans font-semibold text-roseGold">for Rategang Moroke</div>
+      </div>
+      <p class="text-white/70 text-sm sm:text-base mt-3">Headphones recommended. Music is gentle and optional.</p>
+      <button id="btn-start" class="mt-6 w-full sm:w-auto inline-flex items-center gap-2 rounded-full px-6 py-3 bg-gradient-to-r from-aurora3 to-aurora2 text-gray-900 font-extrabold shadow-lg hover:brightness-110 active:scale-[.98]">
+        <span>Enter Experience</span> <span>✨</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- TTS toast -->
+  <div id="tts-loading" class="fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 glass rounded-full text-sm text-white/90 opacity-0 transition-opacity duration-300 pointer-events-none z-[1001] shimmer">
+    Generating personalized audio…
+  </div>
+
+  <!-- 3D container -->
+  <main id="experience" class="w-full h-full">
+    <div id="container" class="w-full h-full" aria-label="3D gift scene" role="img"></div>
+  </main>
+
+  <script type="module">
+    // ---------- Global State ----------
+    const STATE = {
+      CLOSED: 0,
+      OPENING: 1,
+      MESSAGE_VISIBLE: 2,
+      CLOSING: 3,
+      current: 0,
+      hasInteracted: false,
+      audioEnabled: false
+    };
+
+    const GIFT_SIZE = { width: 1.5, height: 1.5, depth: 1.5 };
+    const TEXT_COLOR = '#000000';
+    const PAPER_COLOR = '#FFFFFF';
+    const PRIMARY_COLOR = 0xfc72b7; // bright pink
+    const SECONDARY_COLOR = 0xffe45c; // gold
+
+    // Perf heuristics
+    const deviceMemory = navigator.deviceMemory || 4;
+    const isLowEnd = deviceMemory <= 2 || /mobi|android/i.test(navigator.userAgent);
+
+    // ---------- Three.js ----------
+    let scene, camera, renderer, controls;
+    let composer, renderPass, bloomPass;
+    let giftBase, giftLid, messagePlane, sparkleSystem, ambientLight, pointLight, stars;
+    let animationStartTime = 0;
+    const animationDuration = 1.5;
+    const clock = new THREE.Clock();
+    let readingMode = false;
+
+    // ---------- Audio (Tone) ----------
+    let bgmLoop = null;
+    let reverb, delay, lowpass, synth;
+
+    // ---------- DOM ----------
+    const ttsToast = document.getElementById('tts-loading');
+    const banner = document.getElementById('instruction-banner');
+    const splash = document.getElementById('splash');
+    const btnStart = document.getElementById('btn-start');
+    const btnAudio = document.getElementById('btn-audio');
+    const btnReset = document.getElementById('btn-reset');
+    const btnRecenter = document.getElementById('btn-recenter');
+    const overlayDim = document.getElementById('dim-overlay');
+
+    // ---------- WAV Utils ----------
+    const base64ToArrayBuffer = (base64) => {
+      const binaryString = atob(base64);
+      const len = binaryString.length;
+      const bytes = new Uint8Array(len);
+      for (let i = 0; i < len; i++) bytes[i] = binaryString.charCodeAt(i);
+      return bytes.buffer;
+    };
+
+    const writeString = (view, offset, string) => {
+      for (let i = 0; i < string.length; i++) view.setUint8(offset + i, string.charCodeAt(i));
+    };
+
+    const pcmToWav = (pcm16, sampleRate) => {
+      const numChannels = 1;
+      const bytesPerSample = 2;
+      const blockAlign = numChannels * bytesPerSample;
+      const byteRate = sampleRate * blockAlign;
+      const dataSize = pcm16.length * bytesPerSample;
+      const buffer = new ArrayBuffer(44 + dataSize);
+      const view = new DataView(buffer);
+
+      // RIFF header
+      writeString(view, 0, 'RIFF');
+      view.setUint32(4, 36 + dataSize, true);
+      writeString(view, 8, 'WAVE');
+
+      // fmt subchunk
+      writeString(view, 12, 'fmt ');
+      view.setUint32(16, 16, true); // subchunk size
+      view.setUint16(20, 1, true);  // PCM
+      view.setUint16(22, numChannels, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, byteRate, true);
+      view.setUint16(32, blockAlign, true);
+      view.setUint16(34, 16, true); // bits per sample
+
+      // data subchunk
+      writeString(view, 36, 'data');
+      view.setUint32(40, dataSize, true);
+
+      let offset = 44;
+      for (let i = 0; i < pcm16.length; i++) {
+        view.setInt16(offset, pcm16[i], true);
+        offset += 2;
+      }
+
+      return new Blob([view], { type: 'audio/wav' });
+    };
+
+    // ---------- TTS (Gemini) + Fallback ----------
+    async function playTtsAudio(text) {
+      const apiKey = 'AIzaSyD-YcJPSO5DZzq2jfrFMuh-lfJ7rOdD1zQ';
+      const model = 'gemini-2.5-flash-preview-tts';
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text }] }],
+        generationConfig: {
+          responseModalities: ['AUDIO'],
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Puck' } } },
+        },
+        model
+      };
+
+      const useGemini = Boolean(apiKey);
+      ttsToast.style.opacity = '1';
+
+      try {
+        if (useGemini) {
+          let response;
+          const maxRetries = 3;
+          for (let i = 0; i < maxRetries; i++) {
+            try {
+              response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              if (response.ok) break;
+              await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+            } catch (err) {
+              if (i === maxRetries - 1) throw err;
+              await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+            }
+          }
+
+          if (response && response.ok) {
+            const result = await response.json();
+            const part = result?.candidates?.[0]?.content?.parts?.[0];
+            const audioData = part?.inlineData?.data;
+            const mimeType = part?.inlineData?.mimeType;
+
+            if (audioData && mimeType && mimeType.startsWith('audio/L16')) {
+              const rateMatch = mimeType.match(/rate=(\d+)/);
+              const sampleRate = rateMatch ? parseInt(rateMatch[1], 10) : 24000;
+              const pcmData = base64ToArrayBuffer(audioData);
+              const pcm16 = new Int16Array(pcmData);
+              const wavBlob = pcmToWav(pcm16, sampleRate);
+              const audioUrl = URL.createObjectURL(wavBlob);
+              const audio = new Audio(audioUrl);
+              await audio.play();
+              return;
+            }
+          }
+        }
+
+        // Fallback to Web Speech API
+        await speakWithSpeechSynthesis(text);
+      } catch (e) {
+        console.warn('TTS failed, using fallback speech synthesis.', e);
+        try { await speakWithSpeechSynthesis(text); } catch {}
+      } finally {
+        ttsToast.style.opacity = '0';
+      }
+    }
+
+    function speakWithSpeechSynthesis(text) {
+      return new Promise((resolve, reject) => {
+        if (!('speechSynthesis' in window)) return reject(new Error('speechSynthesis not supported'));
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.0; // cheerful but intelligible
+        utter.pitch = 1.05;
+        utter.volume = 0.9;
+        const preferredVoices = ['Google UK English Female', 'Samantha', 'Victoria', 'Google US English', 'English United Kingdom'];
+        const pickVoice = () => {
+          const voices = window.speechSynthesis.getVoices();
+          for (const name of preferredVoices) {
+            const v = voices.find(v => v.name.includes(name));
+            if (v) return v;
+          }
+          return voices[0];
+        };
+        const trySpeak = () => {
+          const v = pickVoice();
+          if (v) utter.voice = v;
+          utter.onend = resolve;
+          utter.onerror = reject;
+          window.speechSynthesis.speak(utter);
+        };
+        if (window.speechSynthesis.getVoices().length === 0) {
+          window.speechSynthesis.onvoiceschanged = trySpeak;
+          setTimeout(trySpeak, 300);
+        } else {
+          trySpeak();
+        }
+      });
+    }
+
+    // ---------- Audio Init (Tone) ----------
+    function initializeAudio() {
+      if (STATE.hasInteracted) return;
+      STATE.hasInteracted = true;
+
+      Tone.start();
+      reverb = new Tone.Reverb({ decay: 5, preDelay: 0.05, wet: 0.3 }).toDestination();
+      delay = new Tone.PingPongDelay('4n', 0.35).connect(reverb);
+      lowpass = new Tone.Filter(7000, 'lowpass').connect(delay);
+      synth = new Tone.AMSynth({
+        harmonicity: 0.8,
+        detune: 0,
+        envelope: { attack: 0.1, decay: 0.5, sustain: 0.6, release: 1.5 },
+        modulationEnvelope: { attack: 0.5, decay: 0.2, sustain: 0.1, release: 0.05 },
+        volume: -14
+      }).connect(lowpass);
+
+      const notes = ['D4', 'F#4', 'A4', 'C#5', 'B4', 'A4'];
+      let i = 0;
+      bgmLoop = new Tone.Loop(time => {
+        synth.triggerAttackRelease(notes[i % notes.length], '4n', time);
+        i++;
+      }, '4n').start(0);
+
+      Tone.Transport.bpm.value = 88;
+      if (STATE.audioEnabled) Tone.Transport.start();
+    }
+
+    function setAudioEnabled(enabled) {
+      STATE.audioEnabled = enabled;
+      if (!STATE.hasInteracted) return; // Transport start handled on init
+      if (enabled) {
+        Tone.Transport.start();
+        btnAudio.textContent = '🔊 Music On';
+      } else {
+        Tone.Transport.pause();
+        btnAudio.textContent = '🔇 Music Off';
+      }
+    }
+
+    function softOneShotChime() {
+      const shimmer = new Tone.PluckSynth({ attackNoise: 1, dampening: 3500, resonance: 0.96, volume: -16 }).toDestination();
+      shimmer.triggerAttackRelease('C6', '16n');
+    }
+
+    // ---------- Scene Setup ----------
+    function init() {
+      const container = document.getElementById('container');
+
+      scene = new THREE.Scene();
+      scene.fog = new THREE.Fog(0x0a0a0a, 2, 16);
+
+      camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.set(0, 2.5, 5);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: isLowEnd ? 'low-power' : 'high-performance' });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, isLowEnd ? 1.5 : 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.appendChild(renderer.domElement);
+
+      // Lights
+      ambientLight = new THREE.AmbientLight(0xffffff, 1.3);
+      scene.add(ambientLight);
+      pointLight = new THREE.PointLight(0xffffff, 5, 20);
+      pointLight.position.set(5, 6, 5);
+      pointLight.castShadow = true;
+      scene.add(pointLight);
+
+      // Stars
+      const starsGeometry = new THREE.BufferGeometry();
+      const starCount = isLowEnd ? 800 : 1600;
+      const positions = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 180;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 180;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 180;
+      }
+      starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const starsMaterial = new THREE.PointsMaterial({ color: 0xffe45c, size: isLowEnd ? 0.12 : 0.16, sizeAttenuation: true, transparent: true, opacity: 0.82, blending: THREE.AdditiveBlending });
+      stars = new THREE.Points(starsGeometry, starsMaterial);
+      scene.add(stars);
+
+      // Controls
+      controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; controls.dampingFactor = 0.06;
+      controls.enablePan = false; controls.enableZoom = true;
+      controls.autoRotate = true; controls.autoRotateSpeed = 1.0;
+      controls.target.set(0, 0.1, 0);
+      controls.update();
+
+      createGift();
+      createMessagePlane();
+      createSparkleSystem();
+
+      // Postprocessing
+      composer = new THREE.EffectComposer(renderer);
+      renderPass = new THREE.RenderPass(scene, camera);
+      composer.addPass(renderPass);
+      bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), isLowEnd ? 0.7 : 1.15, 0.8, 0.85);
+      composer.addPass(bloomPass);
+
+      window.addEventListener('resize', onWindowResize);
+      renderer.domElement.addEventListener('pointerdown', onPointerDown);
+
+      // Context loss handling
+      renderer.domElement.addEventListener('webglcontextlost', (e) => { e.preventDefault(); });
+      renderer.domElement.addEventListener('webglcontextrestored', () => { onWindowResize(); });
+
+      animate();
+    }
+
+    function createGift() {
+      const giftMaterial = new THREE.MeshStandardMaterial({ color: PRIMARY_COLOR, metalness: 0.25, roughness: 0.3, envMapIntensity: 1 });
+
+      // Base
+      const baseGeometry = new THREE.BoxGeometry(GIFT_SIZE.width, GIFT_SIZE.height * 0.9, GIFT_SIZE.depth);
+      giftBase = new THREE.Mesh(baseGeometry, giftMaterial);
+      giftBase.position.y = (-GIFT_SIZE.height * 0.1) / 2;
+      giftBase.castShadow = true; giftBase.receiveShadow = true;
+      giftBase.userData.isGift = true;
+      scene.add(giftBase);
+
+      // Lid with textured top
+      const lidGeometry = new THREE.BoxGeometry(GIFT_SIZE.width * 1.05, GIFT_SIZE.height * 0.1, GIFT_SIZE.depth * 1.05);
+      const lidMaterial = new THREE.MeshStandardMaterial({ map: createGiftTopTexture(), metalness: 0.45, roughness: 0.2 });
+      giftLid = new THREE.Mesh(lidGeometry, lidMaterial);
+      giftLid.position.y = GIFT_SIZE.height * 0.9 / 2;
+      giftLid.castShadow = true; giftLid.userData.isGift = true;
+      scene.add(giftLid);
+    }
+
+    function createGiftTopTexture() {
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      const size = 512; canvas.width = size; canvas.height = size;
+
+      // Satin pink
+      const grad = context.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#ff7fc8');
+      grad.addColorStop(1, '#f94aa6');
+      context.fillStyle = grad; context.fillRect(0, 0, size, size);
+
+      // Gold ribbon
+      context.fillStyle = '#ffb703';
+      context.fillRect(size/2 - 26, 0, 52, size);
+      context.fillRect(0, size/2 - 26, size, 52);
+
+      // Bow center
+      context.fillStyle = '#ffe45c';
+      context.beginPath(); context.arc(size/2, size/2, 36, 0, Math.PI * 2); context.fill();
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function createTextureWithText(text, fontSize = '56px', color = TEXT_COLOR, background = PAPER_COLOR) {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const size = 2048; canvas.width = size; canvas.height = size;
+
+      // background
+      const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+      bgGrad.addColorStop(0, '#ffffff');
+      bgGrad.addColorStop(1, '#f6f6f6');
+      ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, size, size);
+
+      // subtle border
+      ctx.strokeStyle = '#e7e7e7';
+      ctx.lineWidth = 8; ctx.strokeRect(16, 16, size-32, size-32);
+
+      ctx.font = `${fontSize} Inter, sans-serif`;
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      // Improve legibility
+      ctx.shadowColor = 'rgba(0,0,0,0.22)';
+      ctx.shadowBlur = 8;
+      ctx.shadowOffsetY = 3;
+
+      const lines = text.split('\n');
+      const lineHeight = 110;
+      let y = size / 2 - (lines.length - 1) * lineHeight / 2;
+      for (const line of lines) { ctx.fillText(line, size / 2, y); y += lineHeight; }
+
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function createMessagePlane() {
+      const message =
+        '✨ HAPPY BIRTHDAY! ✨\n\n' +
+        'Dearest Rategang Moroke,\n\n' +
+        'This token carries all my love and best wishes. You are an\n' +
+        'incredible sister, a shining star, and you deserve a day filled\n' +
+        'with pure joy and laughter. May your year ahead be as brilliant,\n' +
+        'impactful, and wonderful as you are!\n\n' +
+        '- Your Adoring Sibling';
+
+      const messageTexture = createTextureWithText(message, '40px', TEXT_COLOR, PAPER_COLOR);
+
+      // outer box
+      const boxGeometry = new THREE.BoxGeometry(GIFT_SIZE.width * 2.5, GIFT_SIZE.height * 2.5, 0.12);
+      const boxMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.12, roughness: 0.85 });
+      messagePlane = new THREE.Mesh(boxGeometry, boxMaterial);
+
+      // inner printable page
+      const planeGeometry = new THREE.PlaneGeometry(GIFT_SIZE.width * 2.3, GIFT_SIZE.height * 2.3);
+      const planeMaterial = new THREE.MeshBasicMaterial({ map: messageTexture, side: THREE.FrontSide, transparent: true, opacity: 0, depthTest: false, depthWrite: false });
+      const innerPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+      innerPlane.position.z = 0.07;
+      messagePlane.add(innerPlane);
+
+      messagePlane.visible = false;
+      messagePlane.position.set(0, 0, 0);
+      messagePlane.rotation.x = 0;
+      messagePlane.userData.isMessage = true;
+      scene.add(messagePlane);
+    }
+
+    function createSparkleSystem() {
+      const particleCount = isLowEnd ? 1400 : 2600;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const velocities = new Float32Array(particleCount * 3);
+      const colors = new Float32Array(particleCount * 3);
+
+      const palette = [ new THREE.Color(0xfde68a), new THREE.Color(0xffa8d0), new THREE.Color(0x99ffff), new THREE.Color(0xdf84fc), new THREE.Color(0xf87171) ];
+
+      for (let i = 0; i < particleCount; i++) {
+        positions[i*3] = 0; positions[i*3+1] = GIFT_SIZE.height * 0.4; positions[i*3+2] = 0;
+        const v = Math.random() * 0.55 + 0.55; const theta = Math.random() * Math.PI * 2; const phi = Math.random() * Math.PI * 0.4 + 0.1;
+        velocities[i*3] = v * Math.sin(phi) * Math.cos(theta);
+        velocities[i*3+1] = v * Math.cos(phi) + 0.55;
+        velocities[i*3+2] = v * Math.sin(phi) * Math.sin(theta);
+        const c = palette[Math.floor(Math.random() * palette.length)]; colors[i*3] = c.r; colors[i*3+1] = c.g; colors[i*3+2] = c.b;
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
+      geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({ size: isLowEnd ? 0.085 : 0.105, vertexColors: true, blending: THREE.AdditiveBlending, transparent: true, depthWrite: false, opacity: 1.0 });
+      sparkleSystem = new THREE.Points(geometry, material);
+      sparkleSystem.visible = false;
+      scene.add(sparkleSystem);
+    }
+
+    // ---------- Interaction ----------
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    function onPointerDown(event) {
+      if (!STATE.hasInteracted) initializeAudio();
+
+      pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(pointer, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      for (const hit of intersects) {
+        if (hit.object.userData?.isGift && STATE.current === STATE.CLOSED) { handleGiftClick(); break; }
+        if (hit.object.parent && hit.object.parent.userData?.isMessage && STATE.current === STATE.MESSAGE_VISIBLE) { handleMessageClose(); break; }
+      }
+    }
+
+    // ---------- Animation Loop ----------
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      controls.update();
+
+      // gift open/close
+      if (STATE.current === STATE.OPENING || STATE.current === STATE.CLOSING) {
+        const elapsed = clock.getElapsedTime() - animationStartTime;
+        let t = Math.min(1, elapsed / animationDuration);
+        let reverseT = 1 - t;
+
+        if (STATE.current === STATE.OPENING) {
+          giftLid.position.y = THREE.MathUtils.lerp(GIFT_SIZE.height * 0.9 / 2, GIFT_SIZE.height * 2.5, t);
+          giftLid.rotation.y += delta * 13; giftLid.rotation.z += delta * 13;
+
+          messagePlane.visible = true;
+          messagePlane.children[0].material.opacity = THREE.MathUtils.lerp(0, 1, t);
+          messagePlane.position.y = THREE.MathUtils.lerp(-GIFT_SIZE.height * 0.5, GIFT_SIZE.height * 0.7, t);
+
+          controls.autoRotate = false;
+          if (t === 1) { STATE.current = STATE.MESSAGE_VISIBLE; controls.enableDamping = true; readingMode = true; applyReadingMode(); }
+        } else {
+          giftLid.position.y = THREE.MathUtils.lerp(GIFT_SIZE.height * 0.9 / 2, GIFT_SIZE.height * 2.5, reverseT);
+          giftLid.rotation.y += delta * 13; giftLid.rotation.z += delta * 13;
+          messagePlane.children[0].material.opacity = THREE.MathUtils.lerp(0, 1, reverseT);
+          messagePlane.position.y = THREE.MathUtils.lerp(-GIFT_SIZE.height * 0.5, GIFT_SIZE.height * 0.7, reverseT);
+          if (reverseT === 0) { STATE.current = STATE.CLOSED; messagePlane.visible = false; controls.autoRotate = true; readingMode = false; applyReadingMode(); }
+        }
+      }
+
+      // sparkles
+      if (sparkleSystem.visible) {
+        const positions = sparkleSystem.geometry.attributes.position.array;
+        const velocities = sparkleSystem.geometry.attributes.velocity.array;
+        const size = sparkleSystem.geometry.attributes.position.count;
+        const decayRate = delta * 0.00055;
+        let allFaded = true;
+
+        for (let i = 0; i < size; i++) {
+          positions[i*3] += velocities[i*3] * delta * 2;
+          positions[i*3+1] += velocities[i*3+1] * delta * 2;
+          positions[i*3+2] += velocities[i*3+2] * delta * 2;
+          velocities[i*3+1] -= delta * 0.5;
+          const currentAlpha = sparkleSystem.material.opacity;
+          sparkleSystem.material.opacity = Math.max(0, currentAlpha - decayRate);
+          if (currentAlpha > 0.01) allFaded = false;
+        }
+        sparkleSystem.geometry.attributes.position.needsUpdate = true;
+        if (allFaded) { sparkleSystem.visible = false; sparkleSystem.material.opacity = 1.0; }
+      }
+
+      // Render with post
+      if (composer) composer.render(); else renderer.render(scene, camera);
+    }
+
+    function applyReadingMode() {
+      // bring message to front and simplify scene behind it
+      if (!messagePlane) return;
+      const inner = messagePlane.children?.[0];
+      if (readingMode) {
+        if (overlayDim) overlayDim.style.opacity = '1';
+        if (giftBase) giftBase.visible = false;
+        if (giftLid) giftLid.visible = false;
+        if (stars && stars.material) stars.material.opacity = 0.12;
+        if (bloomPass) bloomPass.strength = isLowEnd ? 0.35 : 0.55;
+        controls.enableZoom = false;
+        messagePlane.renderOrder = 999;
+        if (inner && inner.material) { inner.material.depthTest = false; inner.material.depthWrite = false; inner.material.needsUpdate = true; }
+      } else {
+        if (overlayDim) overlayDim.style.opacity = '0';
+        if (giftBase) giftBase.visible = true;
+        if (giftLid) giftLid.visible = true;
+        if (stars && stars.material) stars.material.opacity = 0.82;
+        if (bloomPass) bloomPass.strength = isLowEnd ? 0.7 : 1.15;
+        controls.enableZoom = true;
+        if (inner && inner.material) { inner.material.depthTest = true; inner.material.depthWrite = false; inner.material.needsUpdate = true; }
+      }
+    }
+
+    // ---------- Event Handlers ----------
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      if (composer) composer.setSize(window.innerWidth, window.innerHeight);
+      if (bloomPass) bloomPass.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    async function handleGiftClick() {
+      if (STATE.current !== STATE.CLOSED) return;
+
+      // gentle sfx
+      softOneShotChime();
+
+      // sparkle burst
+      createSparkleSystem();
+      sparkleSystem.visible = true;
+
+      // start open
+      STATE.current = STATE.OPENING;
+      animationStartTime = clock.getElapsedTime();
+
+      // TTS greeting shortly after opening
+      setTimeout(() => {
+        playTtsAudio('Say enthusiastically and brightly: Happy Birthday! Wishing you a day filled with love, laughter, and unforgettable moments!');
+      }, 800);
+    }
+
+    function handleMessageClose() {
+      if (STATE.current !== STATE.MESSAGE_VISIBLE) return;
+      STATE.current = STATE.CLOSING; animationStartTime = clock.getElapsedTime();
+    }
+
+    // ---------- UI Wiring ----------
+    btnStart.addEventListener('click', async () => {
+      initializeAudio();
+      setAudioEnabled(true);
+      splash.style.opacity = '0';
+      splash.style.pointerEvents = 'none';
+      setTimeout(() => splash.style.display = 'none', 500);
+    });
+
+    btnAudio.addEventListener('click', () => setAudioEnabled(!STATE.audioEnabled));
+
+    btnReset.addEventListener('click', () => {
+      STATE.current = STATE.CLOSED;
+      messagePlane.visible = false; messagePlane.children[0].material.opacity = 0; messagePlane.position.y = 0;
+      giftLid.position.y = GIFT_SIZE.height * 0.9 / 2; giftLid.rotation.set(0, 0, 0);
+      controls.autoRotate = true; controls.reset(); controls.target.set(0, 0.1, 0); controls.update();
+      createSparkleSystem(); sparkleSystem.visible = false;
+    });
+
+    btnRecenter.addEventListener('click', () => {
+      controls.target.set(0, 0.1, 0); controls.update();
+    });
+
+    // Hide banner after a few seconds
+    setTimeout(() => { banner.style.opacity = '0.92'; }, 200);
+    setTimeout(() => { banner.style.opacity = '0'; banner.style.pointerEvents = 'none'; }, 5000);
+
+    // ---------- Boot ----------
+    window.addEventListener('load', () => { init(); });
+  </script>
+</body>
+</html>
